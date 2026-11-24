@@ -1,0 +1,1939 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>和弦性質聽力練習｜日式可愛雜貨風音樂聽寫手帳</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts: Zen Maru Gothic & Noto Sans TC -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=Zen+Maru+Gothic:wght@500;700&display=swap" rel="stylesheet" />
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Zen Maru Gothic"', '"Noto Sans TC"', 'system-ui', 'sans-serif'],
+            mono: ['ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', 'monospace']
+          },
+          colors: {
+            zakka: {
+              bg: '#FAF6EE',          // 溫潤亞麻米白背景
+              paper: '#FFFDF9',       // 手工和紙卡片白
+              kraft: '#F4EDE1',       // 牛皮紙米色輔助底
+              stitch: '#D8CBB8',      // 縫線虛線邊框色
+              cocoa: '#4A3B32',       // 深焙咖啡主墨色
+              muted: '#7D6B5D',       // 淺可可輔助文字
+              orange: '#D96B27',      // 咖啡橘主強調色
+              orangeHover: '#C05A1B',
+              matcha: '#4E8A54',      // 抹茶綠（答對）
+              terracotta: '#C94A32',  // 赤陶紅（答錯）
+              mustard: '#D4A03C'      // 芥末黃（輔助提示）
+            }
+          },
+          boxShadow: {
+            zakka: '0 4px 14px -4px rgba(74, 59, 50, 0.08), 0 2px 4px -1px rgba(74, 59, 50, 0.04)',
+            tag: '0 2px 6px -1px rgba(74, 59, 50, 0.09)'
+          }
+        }
+      }
+    };
+  </script>
+  <style>
+    /* 日式可愛雜貨風：亞麻米白紙張紋理 */
+    body {
+      font-family: 'Zen Maru Gothic', 'Noto Sans TC', system-ui, sans-serif;
+      background-color: #FAF6EE;
+      background-image: radial-gradient(#DFD3BE 1.1px, transparent 1.1px);
+      background-size: 16px 16px;
+      color: #4A3B32;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    /* 手作紙卡片（不設 overflow: hidden，避免裁切下方迷你鋼琴） */
+    .zakka-card {
+      background-color: #FFFDF9;
+      border: 1.5px solid #D8CBB8;
+      box-shadow: 0 4px 14px -4px rgba(74, 59, 50, 0.08), 0 2px 4px -1px rgba(74, 59, 50, 0.04);
+      position: relative;
+    }
+
+    /* 頂部和風紙膠帶裝飾 */
+    .washi-tape {
+      position: absolute;
+      top: -8px;
+      left: 50%;
+      transform: translateX(-50%) rotate(-1.2deg);
+      width: 74px;
+      height: 15px;
+      border-radius: 2px;
+      background: repeating-linear-gradient(
+        45deg,
+        rgba(217, 107, 39, 0.26),
+        rgba(217, 107, 39, 0.26) 5px,
+        rgba(255, 253, 249, 0.65) 5px,
+        rgba(255, 253, 249, 0.65) 10px
+      );
+      border-left: 1px dashed rgba(217, 107, 39, 0.45);
+      border-right: 1px dashed rgba(217, 107, 39, 0.45);
+      pointer-events: none;
+      z-index: 10;
+    }
+
+    /* 直式和風木札文字排版 */
+    .vertical-tag-text {
+      writing-mode: vertical-rl;
+      text-orientation: upright;
+      letter-spacing: 0.06em;
+      line-height: 1.08;
+      font-size: clamp(12px, 3.1vw, 15px);
+    }
+
+    /* 音波躍動小動畫 */
+    @keyframes miniPulse {
+      0%, 100% { transform: scaleY(0.32); }
+      50% { transform: scaleY(1); }
+    }
+    .wave-bar {
+      transform-origin: center;
+      transform: scaleY(0.32);
+    }
+    .playing .wave-bar {
+      animation: miniPulse 0.65s ease-in-out infinite;
+    }
+    .playing .wave-bar:nth-child(2) { animation-delay: 0.14s; }
+    .playing .wave-bar:nth-child(3) { animation-delay: 0.26s; }
+    .playing .wave-bar:nth-child(4) { animation-delay: 0.1s; }
+
+    /* 微幅進場動畫 */
+    @keyframes fadeSlide {
+      from { opacity: 0; transform: translateY(3px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .animate-fade {
+      animation: fadeSlide 0.18s ease-out forwards;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col selection:bg-zakka-orange/20 selection:text-zakka-cocoa">
+
+  <!-- 1. 精簡頂部標題、模式切換與題庫設定開關列 -->
+  <header class="bg-zakka-paper/95 backdrop-blur-xs border-b border-zakka-stitch sticky top-0 z-30">
+    <div class="max-w-4xl mx-auto px-3 sm:px-4 py-2 flex flex-wrap items-center justify-between gap-2">
+      <!-- 左側品牌標題 -->
+      <div class="flex items-center gap-2">
+        <div class="w-7 h-7 rounded-xl bg-zakka-orange text-white flex items-center justify-center shrink-0 shadow-2xs">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3" />
+          </svg>
+        </div>
+        <h1 class="text-sm sm:text-base font-bold text-zakka-cocoa tracking-wide">
+          和弦性質聽力練習
+        </h1>
+      </div>
+
+      <!-- 中間雙模式切換 -->
+      <nav class="inline-flex p-0.5 rounded-xl bg-zakka-kraft border border-zakka-stitch" aria-label="練習模式切換">
+        <button
+          id="tab-single"
+          type="button"
+          class="px-2.5 sm:px-3 py-1 rounded-lg text-xs sm:text-sm font-bold bg-zakka-paper text-zakka-orange shadow-2xs border border-zakka-stitch/80 transition cursor-pointer"
+        >
+          🎵 單一播放
+        </button>
+        <button
+          id="tab-batch"
+          type="button"
+          class="px-2.5 sm:px-3 py-1 rounded-lg text-xs sm:text-sm font-bold text-zakka-muted hover:text-zakka-cocoa transition cursor-pointer"
+        >
+          📝 連續十題
+        </button>
+      </nav>
+
+      <!-- 右上角「題庫與音色設定」折疊抽屜開關（顯示已選和弦數量徽章） -->
+      <button
+        id="settings-drawer-toggle"
+        type="button"
+        aria-expanded="false"
+        class="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-zakka-kraft hover:bg-zakka-stitch/50 border border-zakka-stitch text-xs font-bold text-zakka-cocoa transition cursor-pointer"
+      >
+        <span>⚙️ 題庫與音色設定</span>
+        <span id="header-pool-badge" class="px-1.5 py-0.5 rounded-full bg-zakka-orange text-white text-[11px] font-bold">
+          已選 7 種
+        </span>
+      </button>
+    </div>
+  </header>
+
+  <!-- 浮動提示訊息（取代 alert） -->
+  <div id="toast-box" class="fixed bottom-4 right-4 z-50 flex flex-col gap-1.5 pointer-events-none max-w-xs w-full px-3 sm:px-0"></div>
+
+  <!-- 主容器（緊湊垂直間距，絕無 overflow: hidden 裁切） -->
+  <main class="flex-1 max-w-4xl w-full mx-auto px-3 sm:px-4 py-2.5 sm:py-3.5 space-y-2.5">
+
+    <!-- 2. 折疊式「題庫與音色設定」抽屜面板（預設收合節省空間） -->
+    <section id="settings-drawer-body" class="hidden zakka-card rounded-2xl p-3 sm:p-4 bg-zakka-paper space-y-3 animate-fade">
+      <!-- 音色、音域、排列、彈奏方式 -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2">
+        <!-- 音色 -->
+        <div class="bg-zakka-kraft/75 rounded-xl p-2 border border-zakka-stitch">
+          <div class="flex items-center justify-between mb-1">
+            <span class="text-xs font-bold text-zakka-cocoa">🎹 音色</span>
+            <button id="preview-timbre-btn" type="button" class="text-[11px] font-bold px-2 py-0.5 rounded-md bg-zakka-matcha/15 text-zakka-matcha hover:bg-zakka-matcha/25 transition cursor-pointer">
+              ▶ 試聽
+            </button>
+          </div>
+          <div class="grid grid-cols-3 gap-1">
+            <button type="button" data-timbre="piano" class="timbre-btn py-1 px-1 rounded-lg text-xs font-bold border-2 border-zakka-orange bg-zakka-orange/15 text-zakka-cocoa transition cursor-pointer">
+              鋼琴
+            </button>
+            <button type="button" data-timbre="strings" class="timbre-btn py-1 px-1 rounded-lg text-xs font-bold border border-zakka-stitch bg-zakka-paper text-zakka-muted hover:text-zakka-cocoa transition cursor-pointer">
+              弦樂合奏
+            </button>
+            <button type="button" data-timbre="organ" class="timbre-btn py-1 px-1 rounded-lg text-xs font-bold border border-zakka-stitch bg-zakka-paper text-zakka-muted hover:text-zakka-cocoa transition cursor-pointer">
+              管風琴
+            </button>
+          </div>
+        </div>
+
+        <!-- 音域 -->
+        <div class="bg-zakka-kraft/75 rounded-xl p-2 border border-zakka-stitch">
+          <span class="block text-xs font-bold text-zakka-cocoa mb-1">🎼 音域</span>
+          <div class="grid grid-cols-2 gap-1">
+            <button type="button" data-register="low" class="register-btn py-1 px-1 rounded-lg text-xs font-bold border border-zakka-stitch bg-zakka-paper text-zakka-muted hover:text-zakka-cocoa transition cursor-pointer">
+              低音域
+            </button>
+            <button type="button" data-register="mid" class="register-btn py-1 px-1 rounded-lg text-xs font-bold border-2 border-zakka-orange bg-zakka-orange/15 text-zakka-cocoa transition cursor-pointer">
+              中音域
+            </button>
+            <button type="button" data-register="high" class="register-btn py-1 px-1 rounded-lg text-xs font-bold border border-zakka-stitch bg-zakka-paper text-zakka-muted hover:text-zakka-cocoa transition cursor-pointer">
+              高音域
+            </button>
+            <button type="button" data-register="dispersed" class="register-btn py-1 px-1 rounded-lg text-xs font-bold border border-zakka-stitch bg-zakka-paper text-zakka-muted hover:text-zakka-cocoa transition cursor-pointer">
+              全音域分散
+            </button>
+          </div>
+        </div>
+
+        <!-- 排列 -->
+        <div class="bg-zakka-kraft/75 rounded-xl p-2 border border-zakka-stitch">
+          <span class="block text-xs font-bold text-zakka-cocoa mb-1">🧶 排列</span>
+          <div class="grid grid-cols-3 gap-1">
+            <button type="button" data-voicing="root" class="voicing-btn py-1 px-1 rounded-lg text-xs font-bold border-2 border-zakka-orange bg-zakka-orange/15 text-zakka-cocoa transition cursor-pointer">
+              原位
+            </button>
+            <button type="button" data-voicing="inversions" class="voicing-btn py-1 px-1 rounded-lg text-xs font-bold border border-zakka-stitch bg-zakka-paper text-zakka-muted hover:text-zakka-cocoa transition cursor-pointer">
+              轉位
+            </button>
+            <button type="button" data-voicing="open" class="voicing-btn py-1 px-1 rounded-lg text-xs font-bold border border-zakka-stitch bg-zakka-paper text-zakka-muted hover:text-zakka-cocoa transition cursor-pointer">
+              開放排列
+            </button>
+          </div>
+        </div>
+
+        <!-- 彈奏方式 -->
+        <div class="bg-zakka-kraft/75 rounded-xl p-2 border border-zakka-stitch">
+          <span class="block text-xs font-bold text-zakka-cocoa mb-1">✨ 彈奏方式</span>
+          <div class="grid grid-cols-2 gap-1">
+            <button type="button" data-articulation="block" class="articulation-btn py-1 px-1 rounded-lg text-xs font-bold border-2 border-zakka-orange bg-zakka-orange/15 text-zakka-cocoa transition cursor-pointer">
+              塊狀和弦
+            </button>
+            <button type="button" data-articulation="arp" class="articulation-btn py-1 px-1 rounded-lg text-xs font-bold border border-zakka-stitch bg-zakka-paper text-zakka-muted hover:text-zakka-cocoa transition cursor-pointer">
+              分散和弦
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 題庫勾選（三和弦 4 種 + 七和弦 7 種含小大七 + 4 顆快捷按鈕） -->
+      <div class="bg-zakka-kraft/55 rounded-xl p-2.5 border border-zakka-stitch space-y-2">
+        <div class="flex flex-wrap items-center justify-between gap-1.5">
+          <div class="flex items-center gap-2">
+            <span class="text-xs font-bold text-zakka-cocoa">🏷️ 題目範圍勾選（至少選 2 種）</span>
+            <span id="pool-count-pill" class="text-[11px] font-bold px-2 py-0.5 rounded-full bg-zakka-orange/15 text-zakka-orange">
+              已選 7 種
+            </span>
+          </div>
+          <div class="flex flex-wrap items-center gap-1">
+            <button type="button" data-bulk="triads" class="bulk-btn px-2 py-1 rounded-lg text-xs font-bold bg-zakka-paper hover:bg-zakka-orange/15 text-zakka-cocoa border border-zakka-stitch transition cursor-pointer">
+              三和弦全選
+            </button>
+            <button type="button" data-bulk="sevenths" class="bulk-btn px-2 py-1 rounded-lg text-xs font-bold bg-zakka-paper hover:bg-zakka-orange/15 text-zakka-cocoa border border-zakka-stitch transition cursor-pointer">
+              七和弦全選
+            </button>
+            <button type="button" data-bulk="all" class="bulk-btn px-2 py-1 rounded-lg text-xs font-bold bg-zakka-matcha/15 hover:bg-zakka-matcha/25 text-zakka-matcha border border-zakka-matcha/40 transition cursor-pointer">
+              全部全選
+            </button>
+            <button type="button" data-bulk="none" class="bulk-btn px-2 py-1 rounded-lg text-xs font-bold bg-zakka-terracotta/15 hover:bg-zakka-terracotta/25 text-zakka-terracotta border border-zakka-terracotta/40 transition cursor-pointer">
+              全部取消
+            </button>
+          </div>
+        </div>
+
+        <!-- 三和弦 4 種 -->
+        <div>
+          <div class="text-[11px] font-bold text-zakka-muted mb-1">三和弦（4 種）</div>
+          <div id="triad-checkbox-list" class="grid grid-cols-2 sm:grid-cols-4 gap-1.5"></div>
+        </div>
+
+        <!-- 七和弦 7 種 -->
+        <div>
+          <div class="text-[11px] font-bold text-zakka-muted mb-1">七和弦（7 種）</div>
+          <div id="seventh-checkbox-list" class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-1.5"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 少於 2 種和弦時的溫和提醒橫幅 -->
+    <div id="min-pool-banner" class="hidden rounded-2xl px-3.5 py-2.5 border-2 border-dashed border-zakka-terracotta bg-zakka-terracotta/10 text-center">
+      <p class="text-xs sm:text-sm font-bold text-zakka-terracotta">
+        🐰 目前勾選少於 2 種和弦！請點右上角「⚙️ 題庫與音色設定」，至少勾選 2 種和弦性質即可開始作答。
+      </p>
+    </div>
+
+    <!-- ======================================================================= -->
+    <!-- 模式一：單一播放模式 (Single-Question Practice Mode)                    -->
+    <!-- ======================================================================= -->
+    <section id="single-mode-panel" class="zakka-card rounded-3xl p-3 sm:p-4 pt-4 space-y-2.5">
+      <div class="washi-tape"></div>
+
+      <!-- (1) 精簡播放控制列：小巧「🔊 再聽一次」+「🐢 慢速拆解」+ 題號計數 -->
+      <div class="flex items-center justify-between gap-2 pb-2 border-b border-dashed border-zakka-stitch">
+        <div class="flex items-center gap-2">
+          <span id="single-q-number" class="px-2.5 py-0.5 rounded-full bg-zakka-cocoa text-zakka-paper text-xs font-bold">
+            第 1 題
+          </span>
+          <span id="single-mode-tag" class="text-[11px] font-bold text-zakka-muted hidden sm:inline">
+            鋼琴 · 中音域 · 原位 · 塊狀和弦
+          </span>
+          <!-- 迷你音波指示器 -->
+          <div id="single-wave" class="flex items-center gap-0.5 h-4 px-1" aria-hidden="true">
+            <span class="wave-bar w-1 h-3.5 rounded-full bg-zakka-orange"></span>
+            <span class="wave-bar w-1 h-4 rounded-full bg-zakka-mustard"></span>
+            <span class="wave-bar w-1 h-3.5 rounded-full bg-zakka-matcha"></span>
+            <span class="wave-bar w-1 h-4 rounded-full bg-zakka-orange"></span>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-1.5">
+          <!-- 刻意設計成小巧尺寸的「🔊 再聽一次」 -->
+          <button
+            id="single-replay-btn"
+            type="button"
+            class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-zakka-orange hover:bg-zakka-orangeHover active:scale-[0.98] text-white font-bold text-xs shadow-2xs transition cursor-pointer"
+          >
+            <span>🔊</span>
+            <span>再聽一次</span>
+          </button>
+
+          <button
+            id="single-slow-btn"
+            type="button"
+            class="inline-flex items-center gap-1 px-2 py-1 rounded-lg bg-zakka-kraft hover:bg-zakka-stitch/60 text-zakka-cocoa border border-zakka-stitch font-bold text-xs transition cursor-pointer"
+            title="慢速逐音拆解播放"
+          >
+            <span>🐢</span>
+            <span>慢速拆解</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- (2) 直式和風木札選項列（全部在同一個橫排 flex-nowrap，無需捲動） -->
+      <div id="single-vertical-options" class="flex flex-nowrap items-stretch gap-1 w-full"></div>
+
+      <!-- (3) 永遠顯示的「對錯回饋 + 下一題按鈕」同一橫排 -->
+      <div id="single-feedback-row" class="rounded-2xl px-3 py-2 border-2 border-zakka-stitch bg-zakka-kraft/85 flex items-center justify-between gap-2 transition-colors">
+        <div id="single-feedback-text" class="text-xs sm:text-sm font-bold text-zakka-muted min-w-0">
+          請聽題並點選上方和弦性質
+        </div>
+        <button
+          id="single-next-btn"
+          type="button"
+          class="shrink-0 inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-zakka-paper hover:bg-zakka-kraft text-zakka-muted border border-zakka-stitch font-bold text-xs sm:text-sm transition cursor-pointer"
+        >
+          <span>跳過 / 下一題 →</span>
+        </button>
+      </div>
+
+      <!-- (4) 永遠顯示的兩八度（或三八度）迷你鋼琴鍵盤（黑白鍵皆以咖啡橘色 #D96B27 標示） -->
+      <div id="single-piano-wrapper" class="rounded-2xl p-2 bg-zakka-kraft/60 border border-dashed border-zakka-stitch space-y-1">
+        <div class="flex items-center justify-between px-1">
+          <span id="single-piano-caption" class="text-[11px] font-bold text-zakka-muted">
+            🎹 作答後將以咖啡橘色標示組成音，點擊琴鍵可試聽
+          </span>
+          <span class="text-[11px] font-bold text-zakka-orange">
+            ● 咖啡橘色＝組成音
+          </span>
+        </div>
+        <div id="single-piano-svg-box" class="w-full"></div>
+      </div>
+    </section>
+
+    <!-- ======================================================================= -->
+    <!-- 模式二：連續十題聽寫模式 (10-Question Continuous Dictation Mode)        -->
+    <!-- ======================================================================= -->
+    <section id="batch-mode-panel" class="hidden zakka-card rounded-3xl p-3 sm:p-4 pt-4 space-y-2.5">
+      <div class="washi-tape"></div>
+
+      <!-- (1) 連續十題播放控制與「第 X 次播放」計數列 -->
+      <div class="flex flex-wrap items-center justify-between gap-1.5 pb-2 border-b border-dashed border-zakka-stitch">
+        <div class="flex flex-wrap items-center gap-1.5">
+          <!-- 醒目「第 X 次播放」徽章 -->
+          <span id="batch-play-count-badge" class="px-2.5 py-0.5 rounded-full bg-zakka-orange text-white text-xs font-bold shadow-2xs">
+            第 0 次播放
+          </span>
+          <span id="batch-live-status" class="px-2 py-0.5 rounded-full bg-zakka-kraft text-zakka-cocoa border border-zakka-stitch text-xs font-bold">
+            準備就緒（每題 3.0s · 停頓 1.5s）
+          </span>
+        </div>
+
+        <div class="flex flex-wrap items-center gap-1.5">
+          <button
+            id="batch-start-btn"
+            type="button"
+            class="inline-flex items-center gap-1 px-3 py-1 rounded-xl bg-zakka-orange hover:bg-zakka-orangeHover text-white font-bold text-xs shadow-2xs transition cursor-pointer"
+          >
+            <span>▶</span>
+            <span>開始連續十題</span>
+          </button>
+
+          <button
+            id="batch-replay-all-btn"
+            type="button"
+            class="hidden inline-flex items-center gap-1 px-3 py-1 rounded-xl bg-zakka-orange hover:bg-zakka-orangeHover text-white font-bold text-xs shadow-2xs transition cursor-pointer"
+          >
+            <span>↻</span>
+            <span>再播一次</span>
+          </button>
+
+          <button
+            id="batch-stop-btn"
+            type="button"
+            class="hidden inline-flex items-center gap-1 px-2.5 py-1 rounded-xl bg-zakka-terracotta/15 hover:bg-zakka-terracotta/25 text-zakka-terracotta border border-zakka-terracotta/50 font-bold text-xs transition cursor-pointer"
+          >
+            <span>⏹</span>
+            <span>停止</span>
+          </button>
+
+          <button
+            id="batch-new-set-btn"
+            type="button"
+            class="inline-flex items-center gap-1 px-2 py-1 rounded-xl bg-zakka-kraft hover:bg-zakka-stitch/50 text-zakka-cocoa border border-zakka-stitch font-bold text-xs transition cursor-pointer"
+          >
+            <span>✨ 換新題組</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- 3.0s 演奏 / 1.5s 停頓進度條 -->
+      <div class="flex items-center gap-2 px-1">
+        <div class="flex-1 h-2 bg-zakka-kraft rounded-full border border-zakka-stitch">
+          <div id="batch-progress-fill" class="h-full bg-zakka-orange rounded-full transition-[width] duration-75 ease-linear" style="width: 0%"></div>
+        </div>
+        <span id="batch-timer-sec" class="font-mono text-[11px] font-bold text-zakka-cocoa w-8 text-right shrink-0">
+          --
+        </span>
+      </div>
+
+      <!-- (2) 直式和風木札選項列（全部同一橫排，點選直接填入目前選取格子並跳下一格） -->
+      <div id="batch-vertical-options" class="flex flex-nowrap items-stretch gap-1 w-full"></div>
+
+      <!-- (3) 下方十個作答格子（5×2 網格）+ 「批改對答案」按鈕 -->
+      <div class="space-y-1.5">
+        <div class="flex items-center justify-between gap-2">
+          <span class="text-xs font-bold text-zakka-cocoa">
+            ✍️ 點選格子後按上方和弦填入答案（1～10 題）：
+          </span>
+          <button
+            id="batch-grade-btn"
+            type="button"
+            class="inline-flex items-center gap-1 px-3 py-1 rounded-xl bg-zakka-matcha hover:bg-[#417847] text-white font-bold text-xs shadow-2xs transition cursor-pointer"
+          >
+            <span>💮</span>
+            <span>批改對答案</span>
+          </button>
+        </div>
+        <div id="batch-ten-boxes" class="grid grid-cols-5 gap-1.5"></div>
+      </div>
+
+      <!-- (4) 永遠顯示的「對錯回饋 + 單題重聽」同一橫排 -->
+      <div id="batch-feedback-row" class="rounded-2xl px-3 py-2 border-2 border-zakka-stitch bg-zakka-kraft/85 flex items-center justify-between gap-2 transition-colors">
+        <div id="batch-feedback-text" class="text-xs sm:text-sm font-bold text-zakka-muted min-w-0">
+          點選格子填入答案，完成後按「批改對答案」
+        </div>
+        <button
+          id="batch-single-replay-btn"
+          type="button"
+          class="shrink-0 inline-flex items-center gap-1 px-2.5 py-1 rounded-xl bg-zakka-paper hover:bg-zakka-kraft text-zakka-cocoa border border-zakka-stitch font-bold text-xs transition cursor-pointer"
+        >
+          <span>🔊 重聽第 1 題</span>
+        </button>
+      </div>
+
+      <!-- (5) 永遠顯示的兩八度（或三八度）迷你鋼琴鍵盤（批改後點任一格即以咖啡橘色亮燈） -->
+      <div class="rounded-2xl p-2 bg-zakka-kraft/60 border border-dashed border-zakka-stitch space-y-1">
+        <div class="flex items-center justify-between px-1">
+          <span id="batch-piano-caption" class="text-[11px] font-bold text-zakka-muted">
+            🎹 點擊琴鍵可自由試聽，批改後點選任一題格子可檢視組成音
+          </span>
+          <span class="text-[11px] font-bold text-zakka-orange">
+            ● 咖啡橘色＝組成音
+          </span>
+        </div>
+        <div id="batch-piano-svg-box" class="w-full"></div>
+      </div>
+    </section>
+
+  </main>
+
+  <script>
+    /**
+     * ============================================================================
+     * 1. 台灣慣用樂理術語與完整 11 種和弦定義（三和弦 4 種 + 七和弦 7 種含小大七）
+     * ============================================================================
+     */
+    const CHORD_DEFINITIONS = [
+      // 三和弦（4 種）
+      { id: 'maj', category: 'triad', name: '大三和弦', short: '大三', intervals: [0, 4, 7], degreeSteps: [0, 2, 4], preferSharp: false },
+      { id: 'min', category: 'triad', name: '小三和弦', short: '小三', intervals: [0, 3, 7], degreeSteps: [0, 2, 4], preferSharp: true },
+      { id: 'aug', category: 'triad', name: '增三和弦', short: '增三', intervals: [0, 4, 8], degreeSteps: [0, 2, 4], preferSharp: false },
+      { id: 'dim', category: 'triad', name: '減三和弦', short: '減三', intervals: [0, 3, 6], degreeSteps: [0, 2, 4], preferSharp: true },
+      // 七和弦（7 種，包含小大七和弦與增大七和弦）
+      { id: 'dom7', category: 'seventh', name: '屬七和弦', short: '屬七', intervals: [0, 4, 7, 10], degreeSteps: [0, 2, 4, 6], preferSharp: false },
+      { id: 'maj7', category: 'seventh', name: '大七和弦', short: '大七', intervals: [0, 4, 7, 11], degreeSteps: [0, 2, 4, 6], preferSharp: false },
+      { id: 'min7', category: 'seventh', name: '小七和弦', short: '小七', intervals: [0, 3, 7, 10], degreeSteps: [0, 2, 4, 6], preferSharp: true },
+      { id: 'mmaj7', category: 'seventh', name: '小大七和弦', short: '小大七', intervals: [0, 3, 7, 11], degreeSteps: [0, 2, 4, 6], preferSharp: true },
+      { id: 'hdim7', category: 'seventh', name: '半減七和弦', short: '半減七', intervals: [0, 3, 6, 10], degreeSteps: [0, 2, 4, 6], preferSharp: true },
+      { id: 'dim7', category: 'seventh', name: '減七和弦', short: '減七', intervals: [0, 3, 6, 9], degreeSteps: [0, 2, 4, 6], preferSharp: true },
+      { id: 'augmaj7', category: 'seventh', name: '增大七和弦', short: '增大七', intervals: [0, 4, 8, 11], degreeSteps: [0, 2, 4, 6], preferSharp: false }
+    ];
+
+    const TIMBRE_NAMES = { piano: '鋼琴', strings: '弦樂合奏', organ: '管風琴' };
+    const REGISTER_NAMES = { low: '低音域', mid: '中音域', high: '高音域', dispersed: '全音域分散' };
+    const VOICING_NAMES = { root: '原位', inversions: '轉位', open: '開放排列' };
+    const ARTICULATION_NAMES = { block: '塊狀和弦', arp: '分散和弦' };
+
+    /**
+     * ============================================================================
+     * 2. 樂理拼寫與和弦聲部配置引擎 (MusicTheoryEngine)
+     * ============================================================================
+     */
+    const MusicTheoryEngine = {
+      LETTERS: ['C', 'D', 'E', 'F', 'G', 'A', 'B'],
+      LETTER_BASE_PC: [0, 2, 4, 5, 7, 9, 11],
+      FLAT_ROOTS: [
+        { letterIdx: 0, acc: 0, label: 'C' }, { letterIdx: 1, acc: -1, label: 'Db' },
+        { letterIdx: 1, acc: 0, label: 'D' }, { letterIdx: 2, acc: -1, label: 'Eb' },
+        { letterIdx: 2, acc: 0, label: 'E' }, { letterIdx: 3, acc: 0, label: 'F' },
+        { letterIdx: 3, acc: 1, label: 'F#' }, { letterIdx: 4, acc: 0, label: 'G' },
+        { letterIdx: 5, acc: -1, label: 'Ab' }, { letterIdx: 5, acc: 0, label: 'A' },
+        { letterIdx: 6, acc: -1, label: 'Bb' }, { letterIdx: 6, acc: 0, label: 'B' }
+      ],
+      SHARP_ROOTS: [
+        { letterIdx: 0, acc: 0, label: 'C' }, { letterIdx: 0, acc: 1, label: 'C#' },
+        { letterIdx: 1, acc: 0, label: 'D' }, { letterIdx: 2, acc: -1, label: 'Eb' },
+        { letterIdx: 2, acc: 0, label: 'E' }, { letterIdx: 3, acc: 0, label: 'F' },
+        { letterIdx: 3, acc: 1, label: 'F#' }, { letterIdx: 4, acc: 0, label: 'G' },
+        { letterIdx: 4, acc: 1, label: 'G#' }, { letterIdx: 5, acc: 0, label: 'A' },
+        { letterIdx: 6, acc: -1, label: 'Bb' }, { letterIdx: 6, acc: 0, label: 'B' }
+      ],
+
+      formatAcc(acc) {
+        if (acc === 0) return '';
+        if (acc === 1) return '#';
+        if (acc === 2) return 'x';
+        if (acc === -1) return 'b';
+        if (acc === -2) return 'bb';
+        return acc > 0 ? '#'.repeat(acc) : 'b'.repeat(-acc);
+      },
+
+      getChordToneNamesMap(rootPc, chordDef) {
+        const table = chordDef.preferSharp ? this.SHARP_ROOTS : this.FLAT_ROOTS;
+        const rootInfo = table[rootPc % 12];
+        const map = {};
+
+        chordDef.intervals.forEach((semi, idx) => {
+          const targetPc = (rootPc + semi) % 12;
+          const letterIdx = (rootInfo.letterIdx + chordDef.degreeSteps[idx]) % 7;
+          const naturalPc = this.LETTER_BASE_PC[letterIdx];
+          let diff = (targetPc - naturalPc + 12) % 12;
+          if (diff > 6) diff -= 12;
+          map[targetPc] = this.LETTERS[letterIdx] + this.formatAcc(diff);
+        });
+
+        return { rootName: rootInfo.label, pcToName: map };
+      },
+
+      midiToNoteName(midi, pcToNameMap = null, includeOctave = true) {
+        const pc = ((midi % 12) + 12) % 12;
+        const fallback = ['C', 'C#', 'D', 'Eb', 'E', 'F', 'F#', 'G', 'Ab', 'A', 'Bb', 'B'];
+        const name = (pcToNameMap && pcToNameMap[pc]) ? pcToNameMap[pc] : fallback[pc];
+        if (!includeOctave) return name;
+
+        let octave = Math.floor(midi / 12) - 1;
+        if (name.startsWith('C') && pc === 11) octave += 1;
+        if (name.startsWith('B') && pc === 0) octave -= 1;
+        return `${name}${octave}`;
+      },
+
+      midiToFreq(midi) {
+        return 440 * Math.pow(2, (midi - 69) / 12);
+      },
+
+      generateVoicing(rootPc, chordDef, registerMode, voicingMode) {
+        const isSeventh = chordDef.intervals.length === 4;
+        const count = chordDef.intervals.length;
+
+        let rel = [];
+        if (voicingMode === 'root') {
+          rel = [...chordDef.intervals];
+        } else if (voicingMode === 'inversions') {
+          const inv = Math.floor(Math.random() * count);
+          for (let i = 0; i < count; i++) {
+            const idx = (inv + i) % count;
+            let s = chordDef.intervals[idx];
+            if (idx < inv) s += 12;
+            rel.push(s);
+          }
+        } else {
+          // 開放排列（跨八度分散）
+          if (!isSeventh) {
+            const patterns = [
+              (iv) => [iv[0], iv[2], iv[1] + 12],
+              (iv) => [iv[0], iv[1] + 12, iv[2] + 12],
+              (iv) => [iv[1], iv[0] + 12, iv[2] + 12]
+            ];
+            rel = patterns[Math.floor(Math.random() * patterns.length)](chordDef.intervals);
+          } else {
+            const patterns = [
+              (iv) => [iv[0], iv[2], iv[1] + 12, iv[3] + 12],
+              (iv) => [iv[1], iv[3], iv[0] + 12, iv[2] + 12],
+              (iv) => [iv[0], iv[2], iv[3], iv[1] + 12]
+            ];
+            rel = patterns[Math.floor(Math.random() * patterns.length)](chordDef.intervals);
+          }
+        }
+
+        let activeReg = registerMode;
+        if (registerMode === 'dispersed') {
+          const regs = ['low', 'mid', 'high'];
+          activeReg = regs[Math.floor(Math.random() * regs.length)];
+        }
+
+        let minMidi = 48, maxMidi = 64; // 中音域: C3~E4
+        if (activeReg === 'low') {
+          minMidi = 36; maxMidi = 47;   // 低音域: C2~B2
+        } else if (activeReg === 'high') {
+          minMidi = 72; maxMidi = 79;   // 高音域: C5~G5
+        }
+
+        const bassPc = (rootPc + rel[0]) % 12;
+        const candidates = [];
+        for (let m = minMidi; m <= maxMidi; m++) {
+          if (m % 12 === bassPc) candidates.push(m);
+        }
+        const bassMidi = candidates.length
+          ? candidates[Math.floor(Math.random() * candidates.length)]
+          : minMidi + ((bassPc - (minMidi % 12) + 12) % 12);
+
+        const shift = bassMidi - rel[0];
+        const midiNotes = rel.map(s => s + shift);
+
+        // 低音域清晰度調整（避免極低頻緊密三度混濁）
+        if (activeReg === 'low' && midiNotes[0] < 41 && (midiNotes[1] - midiNotes[0]) <= 4 && voicingMode !== 'open') {
+          midiNotes[1] += 12;
+          midiNotes.sort((a, b) => a - b);
+        }
+
+        return midiNotes;
+      }
+    };
+
+    /**
+     * ============================================================================
+     * 3. Web Audio API 擬真樂器物理建模合成引擎 (SoundEngine)
+     *    - 鋼琴 (Piano): 基頻 + 2/3/4泛音 + 擊弦瞬態 + 動態低通濾波包絡
+     *    - 弦樂合奏 (String Ensemble): 4組微失諧振盪器 (-11c, -4c, +4c, +11c) + 0.2s 弓弦起音
+     *    - 管風琴 (Pipe Organ): 16' / 8' / 4' / 2 2/3' / 2' 音栓疊加 + 管口起音質感
+     * ============================================================================
+     */
+    class SoundEngine {
+      constructor() {
+        this.ctx = null;
+        this.masterGain = null;
+        this.compressor = null;
+        this.reverbNode = null;
+        this.reverbGain = null;
+        this.activeVoices = [];
+        this.timers = [];
+        this.timbre = 'piano';
+        this.onPlayStateChange = null;
+      }
+
+      init() {
+        if (!this.ctx) {
+          const AudioCtx = window.AudioContext || window.webkitAudioContext;
+          this.ctx = new AudioCtx();
+
+          this.compressor = this.ctx.createDynamicsCompressor();
+          this.compressor.threshold.setValueAtTime(-14, this.ctx.currentTime);
+          this.compressor.knee.setValueAtTime(16, this.ctx.currentTime);
+          this.compressor.ratio.setValueAtTime(4, this.ctx.currentTime);
+
+          this.masterGain = this.ctx.createGain();
+          this.masterGain.gain.setValueAtTime(0.84, this.ctx.currentTime);
+
+          this.reverbNode = this.ctx.createConvolver();
+          const len = Math.floor(this.ctx.sampleRate * 1.6);
+          const buf = this.ctx.createBuffer(2, len, this.ctx.sampleRate);
+          for (let ch = 0; ch < 2; ch++) {
+            const d = buf.getChannelData(ch);
+            for (let i = 0; i < len; i++) {
+              d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / len, 2.7);
+            }
+          }
+          this.reverbNode.buffer = buf;
+
+          this.reverbGain = this.ctx.createGain();
+          this.reverbGain.gain.setValueAtTime(0.26, this.ctx.currentTime);
+
+          this.compressor.connect(this.masterGain);
+          this.reverbNode.connect(this.reverbGain);
+          this.reverbGain.connect(this.masterGain);
+          this.masterGain.connect(this.ctx.destination);
+        }
+        if (this.ctx.state === 'suspended') {
+          this.ctx.resume();
+        }
+      }
+
+      setTimbre(t) {
+        this.timbre = t;
+      }
+
+      stopAll() {
+        this.timers.forEach(id => clearTimeout(id));
+        this.timers = [];
+
+        if (this.ctx) {
+          const now = this.ctx.currentTime;
+          this.activeVoices.forEach(v => {
+            try {
+              v.gainNode.gain.cancelScheduledValues(now);
+              v.gainNode.gain.setTargetAtTime(0.0001, now, 0.025);
+              v.nodes.forEach(n => { try { n.stop(now + 0.1); } catch (_) {} });
+            } catch (_) {}
+          });
+        }
+        this.activeVoices = [];
+        if (this.onPlayStateChange) this.onPlayStateChange(false);
+      }
+
+      playNote(midi, offset = 0, duration = 2.2, velocity = 0.85) {
+        this.init();
+        const now = this.ctx.currentTime + offset;
+        const freq = MusicTheoryEngine.midiToFreq(midi);
+
+        const eq = this.ctx.createBiquadFilter();
+        if (midi < 48) {
+          eq.type = 'highshelf';
+          eq.frequency.setValueAtTime(220, now);
+          eq.gain.setValueAtTime(3.6, now);
+        } else {
+          eq.type = 'allpass';
+        }
+
+        const voiceGain = this.ctx.createGain();
+        const revSend = this.ctx.createGain();
+        eq.connect(voiceGain);
+        voiceGain.connect(this.compressor);
+        voiceGain.connect(revSend);
+        revSend.connect(this.reverbNode);
+
+        const nodes = [];
+
+        if (this.timbre === 'piano') {
+          // 鋼琴：基頻 + 2/3/4 泛音 + 擊弦瞬態 + 動態低通濾波包絡
+          revSend.gain.setValueAtTime(0.18, now);
+          const lp = this.ctx.createBiquadFilter();
+          lp.type = 'lowpass';
+          lp.frequency.setValueAtTime(Math.min(8400, freq * (midi < 50 ? 8.5 : 6.4)), now);
+          lp.frequency.exponentialRampToValueAtTime(Math.max(260, freq * 1.5), now + duration * 0.85);
+          lp.connect(eq);
+
+          // 擊弦木質瞬態微音
+          const clickOsc = this.ctx.createOscillator();
+          const clickGain = this.ctx.createGain();
+          clickOsc.type = 'triangle';
+          clickOsc.frequency.setValueAtTime(freq * 5.2, now);
+          clickOsc.frequency.exponentialRampToValueAtTime(freq * 1.2, now + 0.03);
+          clickGain.gain.setValueAtTime(0.08 * velocity, now);
+          clickGain.gain.exponentialRampToValueAtTime(0.0005, now + 0.035);
+          clickOsc.connect(clickGain);
+          clickGain.connect(lp);
+          clickOsc.start(now);
+          clickOsc.stop(now + 0.05);
+          nodes.push(clickOsc);
+
+          [
+            { r: 1, type: 'triangle', g: 0.58 },
+            { r: 2, type: 'sine', g: midi < 55 ? 0.34 : 0.22 },
+            { r: 3, type: 'sine', g: 0.14 },
+            { r: 4, type: 'triangle', g: 0.06 }
+          ].forEach(h => {
+            const osc = this.ctx.createOscillator();
+            const hg = this.ctx.createGain();
+            osc.type = h.type;
+            osc.frequency.setValueAtTime(freq * h.r, now);
+            osc.detune.setValueAtTime((h.r - 1) * 1.3, now);
+            hg.gain.setValueAtTime(h.g, now);
+            if (h.r >= 3) hg.gain.exponentialRampToValueAtTime(0.001, now + duration * 0.45);
+            osc.connect(hg);
+            hg.connect(lp);
+            osc.start(now);
+            osc.stop(now + duration + 0.2);
+            nodes.push(osc);
+          });
+
+          const peak = 0.34 * velocity;
+          voiceGain.gain.setValueAtTime(0.0001, now);
+          voiceGain.gain.linearRampToValueAtTime(peak, now + 0.008);
+          voiceGain.gain.exponentialRampToValueAtTime(peak * 0.4, now + 0.22);
+          voiceGain.gain.exponentialRampToValueAtTime(0.0008, now + duration);
+
+        } else if (this.timbre === 'strings') {
+          // 弦樂合奏：4 組微失諧振盪器 (-11c, -4c, +4c, +11c) + 0.2s 柔和弓弦起音
+          revSend.gain.setValueAtTime(0.4, now);
+          const lp = this.ctx.createBiquadFilter();
+          lp.type = 'lowpass';
+          const cutoff = Math.min(3400, Math.max(950, freq * 4.2));
+          lp.frequency.setValueAtTime(cutoff * 0.65, now);
+          lp.frequency.linearRampToValueAtTime(cutoff, now + 0.3);
+          lp.connect(eq);
+
+          [
+            { type: 'sawtooth', d: -11, g: 0.24 },
+            { type: 'sawtooth', d: -4, g: 0.26 },
+            { type: 'sawtooth', d: +4, g: 0.26 },
+            { type: 'triangle', d: +11, g: 0.28 }
+          ].forEach(v => {
+            const osc = this.ctx.createOscillator();
+            const g = this.ctx.createGain();
+            osc.type = v.type;
+            osc.frequency.setValueAtTime(freq, now);
+            osc.detune.setValueAtTime(v.d, now);
+            g.gain.setValueAtTime(v.g, now);
+            osc.connect(g);
+            g.connect(lp);
+            osc.start(now);
+            osc.stop(now + duration + 0.3);
+            nodes.push(osc);
+          });
+
+          const peak = 0.24 * velocity;
+          const atk = 0.2;
+          const rel = 0.26;
+          voiceGain.gain.setValueAtTime(0.0001, now);
+          voiceGain.gain.linearRampToValueAtTime(peak, now + atk);
+          voiceGain.gain.setValueAtTime(peak * 0.92, now + Math.max(atk + 0.05, duration - rel));
+          voiceGain.gain.exponentialRampToValueAtTime(0.0005, now + duration);
+
+        } else {
+          // 管風琴：16' / 8' / 4' / 2 2/3' / 2' 音栓疊加 + 管口起音 chiff
+          revSend.gain.setValueAtTime(0.46, now);
+          const lp = this.ctx.createBiquadFilter();
+          lp.type = 'lowpass';
+          lp.frequency.setValueAtTime(Math.min(5000, freq * 7.5), now);
+          lp.connect(eq);
+
+          const chiffOsc = this.ctx.createOscillator();
+          const chiffGain = this.ctx.createGain();
+          chiffOsc.type = 'sine';
+          chiffOsc.frequency.setValueAtTime(freq * 4.0, now);
+          chiffGain.gain.setValueAtTime(0.07 * velocity, now);
+          chiffGain.gain.exponentialRampToValueAtTime(0.0005, now + 0.045);
+          chiffOsc.connect(chiffGain);
+          chiffGain.connect(lp);
+          chiffOsc.start(now);
+          chiffOsc.stop(now + 0.06);
+          nodes.push(chiffOsc);
+
+          [
+            { r: 0.5, g: midi < 45 ? 0.14 : 0.25 },
+            { r: 1.0, g: 0.44 },
+            { r: 2.0, g: 0.28 },
+            { r: 3.0, g: 0.13 },
+            { r: 4.0, g: 0.11 }
+          ].forEach(s => {
+            const osc = this.ctx.createOscillator();
+            const g = this.ctx.createGain();
+            osc.type = s.r === 1.0 ? 'triangle' : 'sine';
+            osc.frequency.setValueAtTime(freq * s.r, now);
+            g.gain.setValueAtTime(s.g, now);
+            osc.connect(g);
+            g.connect(lp);
+            osc.start(now);
+            osc.stop(now + duration + 0.2);
+            nodes.push(osc);
+          });
+
+          const peak = 0.24 * velocity;
+          voiceGain.gain.setValueAtTime(0.0001, now);
+          voiceGain.gain.linearRampToValueAtTime(peak, now + 0.035);
+          voiceGain.gain.setValueAtTime(peak, now + Math.max(0.1, duration - 0.15));
+          voiceGain.gain.exponentialRampToValueAtTime(0.0005, now + duration);
+        }
+
+        this.activeVoices.push({ gainNode: voiceGain, nodes });
+      }
+
+      playChord(midiNotes, mode, options = {}) {
+        this.stopAll();
+        this.init();
+
+        const { onNoteTrigger = null, maxDurSec = null } = options;
+        if (this.onPlayStateChange) this.onPlayStateChange(true);
+
+        const count = midiNotes.length;
+        const dur = maxDurSec || 2.3;
+        let totalMs = dur * 1000;
+
+        if (mode === 'block') {
+          midiNotes.forEach(m => this.playNote(m, 0, dur, 0.85));
+          if (onNoteTrigger) onNoteTrigger(midiNotes);
+        } else if (mode === 'arp') {
+          const step = maxDurSec ? 0.3 : 0.34;
+          midiNotes.forEach((m, i) => {
+            const delay = i * step;
+            const noteDur = maxDurSec ? Math.max(0.75, maxDurSec - delay) : (1.8 + (count - i) * step * 0.6);
+            this.playNote(m, delay, noteDur, 0.86);
+            if (onNoteTrigger) {
+              const t = setTimeout(() => onNoteTrigger([m]), delay * 1000);
+              this.timers.push(t);
+            }
+          });
+          totalMs = maxDurSec ? maxDurSec * 1000 : ((count - 1) * step + 1.8) * 1000;
+        } else if (mode === 'slow') {
+          const step = 0.56;
+          midiNotes.forEach((m, i) => {
+            const delay = i * step;
+            const noteDur = 1.7 + (count - i) * step * 0.7;
+            this.playNote(m, delay, noteDur, 0.9);
+            if (onNoteTrigger) {
+              const t = setTimeout(() => onNoteTrigger([m]), delay * 1000);
+              this.timers.push(t);
+            }
+          });
+          totalMs = ((count - 1) * step + 1.7) * 1000;
+        }
+
+        const endT = setTimeout(() => {
+          if (this.onPlayStateChange) this.onPlayStateChange(false);
+        }, Math.min(totalMs, 4000));
+        this.timers.push(endT);
+      }
+    }
+
+    /**
+     * ============================================================================
+     * 4. 應用程式狀態與核心控制邏輯
+     * ============================================================================
+     */
+    const audio = new SoundEngine();
+
+    const state = {
+      mode: 'single', // 'single' | 'batch'
+      drawerOpen: false,
+      // 預設勾選 7 種（三和弦 4 種 + 常用七和弦 3 種）
+      selectedChordIds: new Set(['maj', 'min', 'aug', 'dim', 'dom7', 'maj7', 'min7']),
+      timbre: 'piano',
+      register: 'mid',
+      voicing: 'root',
+      articulation: 'block',
+
+      // 模式一：單一播放狀態
+      single: {
+        qNum: 1,
+        question: null,
+        answered: false,
+        userChoiceId: null
+      },
+
+      // 模式二：連續十題聽寫狀態
+      batch: {
+        status: 'idle',    // 'idle' | 'running' | 'stopped' | 'finished'
+        playCount: 0,      // 第幾次播放 (1, 2, 3...)
+        questions: [],
+        answers: new Array(10).fill(null),
+        selectedBoxIdx: 0, // 目前選取的格子 (0~9)
+        graded: false,
+        currentPlayIdx: 0,
+        phase: 'play',     // 'play' (3000ms) | 'pause' (1500ms)
+        elapsedMs: 0,
+        lastTick: 0,
+        timerId: null
+      }
+    };
+
+    const dom = {
+      tabSingle: document.getElementById('tab-single'),
+      tabBatch: document.getElementById('tab-batch'),
+      singlePanel: document.getElementById('single-mode-panel'),
+      batchPanel: document.getElementById('batch-mode-panel'),
+      minPoolBanner: document.getElementById('min-pool-banner'),
+      toastBox: document.getElementById('toast-box'),
+
+      // 設定抽屜
+      drawerToggle: document.getElementById('settings-drawer-toggle'),
+      drawerBody: document.getElementById('settings-drawer-body'),
+      headerPoolBadge: document.getElementById('header-pool-badge'),
+      poolCountPill: document.getElementById('pool-count-pill'),
+      triadCheckboxList: document.getElementById('triad-checkbox-list'),
+      seventhCheckboxList: document.getElementById('seventh-checkbox-list'),
+      previewTimbreBtn: document.getElementById('preview-timbre-btn'),
+
+      // 模式一 DOM
+      singleQNumber: document.getElementById('single-q-number'),
+      singleModeTag: document.getElementById('single-mode-tag'),
+      singleWave: document.getElementById('single-wave'),
+      singleReplayBtn: document.getElementById('single-replay-btn'),
+      singleSlowBtn: document.getElementById('single-slow-btn'),
+      singleVerticalOptions: document.getElementById('single-vertical-options'),
+      singleFeedbackRow: document.getElementById('single-feedback-row'),
+      singleFeedbackText: document.getElementById('single-feedback-text'),
+      singleNextBtn: document.getElementById('single-next-btn'),
+      singlePianoCaption: document.getElementById('single-piano-caption'),
+      singlePianoSvgBox: document.getElementById('single-piano-svg-box'),
+
+      // 模式二 DOM
+      batchPlayCountBadge: document.getElementById('batch-play-count-badge'),
+      batchLiveStatus: document.getElementById('batch-live-status'),
+      batchStartBtn: document.getElementById('batch-start-btn'),
+      batchReplayAllBtn: document.getElementById('batch-replay-all-btn'),
+      batchStopBtn: document.getElementById('batch-stop-btn'),
+      batchNewSetBtn: document.getElementById('batch-new-set-btn'),
+      batchProgressFill: document.getElementById('batch-progress-fill'),
+      batchTimerSec: document.getElementById('batch-timer-sec'),
+      batchVerticalOptions: document.getElementById('batch-vertical-options'),
+      batchGradeBtn: document.getElementById('batch-grade-btn'),
+      batchTenBoxes: document.getElementById('batch-ten-boxes'),
+      batchFeedbackRow: document.getElementById('batch-feedback-row'),
+      batchFeedbackText: document.getElementById('batch-feedback-text'),
+      batchSingleReplayBtn: document.getElementById('batch-single-replay-btn'),
+      batchPianoCaption: document.getElementById('batch-piano-caption'),
+      batchPianoSvgBox: document.getElementById('batch-piano-svg-box')
+    };
+
+    function showToast(msg, type = 'info') {
+      const el = document.createElement('div');
+      const bg = type === 'warn' ? 'bg-zakka-terracotta text-white' : 'bg-zakka-cocoa text-zakka-paper';
+      el.className = `pointer-events-auto px-3.5 py-2.5 rounded-xl shadow-zakka text-xs font-bold flex items-center gap-2 animate-fade ${bg}`;
+      el.innerHTML = `<span>${type === 'warn' ? '🐰' : '🎵'}</span><span>${msg}</span>`;
+      dom.toastBox.appendChild(el);
+      setTimeout(() => {
+        el.style.opacity = '0';
+        el.style.transition = 'opacity 0.25s';
+        setTimeout(() => el.remove(), 250);
+      }, 2400);
+    }
+
+    /**
+     * 建立單一題目物件
+     */
+    function buildQuestion(excludeId = null) {
+      const activeList = CHORD_DEFINITIONS.filter(c => state.selectedChordIds.has(c.id));
+      let pool = activeList;
+      if (activeList.length >= 2 && excludeId) {
+        pool = activeList.filter(c => c.id !== excludeId);
+      }
+      const chordDef = pool[Math.floor(Math.random() * pool.length)];
+      const rootPc = Math.floor(Math.random() * 12);
+      const midiNotes = MusicTheoryEngine.generateVoicing(rootPc, chordDef, state.register, state.voicing);
+
+      const spelling = MusicTheoryEngine.getChordToneNamesMap(rootPc, chordDef);
+      return {
+        chordDef,
+        rootPc,
+        rootName: spelling.rootName,
+        pcToName: spelling.pcToName,
+        midiNotes,
+        articulation: state.articulation
+      };
+    }
+
+    /**
+     * ============================================================================
+     * 5. 設定面板渲染與防呆檢查（至少勾選 2 種和弦性質）
+     * ============================================================================
+     */
+    function renderSettingsCheckboxes() {
+      dom.triadCheckboxList.innerHTML = '';
+      dom.seventhCheckboxList.innerHTML = '';
+
+      CHORD_DEFINITIONS.forEach(chord => {
+        const checked = state.selectedChordIds.has(chord.id);
+        const label = document.createElement('label');
+        label.className = `flex items-center gap-1.5 px-2 py-1.5 rounded-lg border text-xs font-bold cursor-pointer select-none transition ${
+          checked
+            ? 'border-zakka-orange bg-zakka-orange/12 text-zakka-cocoa'
+            : 'border-zakka-stitch bg-zakka-paper text-zakka-muted hover:text-zakka-cocoa'
+        }`;
+
+        label.innerHTML = `
+          <input type="checkbox" ${checked ? 'checked' : ''} class="w-3.5 h-3.5 accent-zakka-orange cursor-pointer shrink-0" />
+          <span class="truncate">${chord.name}</span>
+        `;
+
+        label.querySelector('input').addEventListener('change', (e) => {
+          if (e.target.checked) state.selectedChordIds.add(chord.id);
+          else state.selectedChordIds.delete(chord.id);
+          onPoolChanged();
+        });
+
+        if (chord.category === 'triad') dom.triadCheckboxList.appendChild(label);
+        else dom.seventhCheckboxList.appendChild(label);
+      });
+
+      const count = state.selectedChordIds.size;
+      dom.headerPoolBadge.textContent = `已選 ${count} 種`;
+      dom.poolCountPill.textContent = `已選 ${count} 種`;
+      dom.singleModeTag.textContent = `${TIMBRE_NAMES[state.timbre]} · ${REGISTER_NAMES[state.register]} · ${VOICING_NAMES[state.voicing]} · ${ARTICULATION_NAMES[state.articulation]}`;
+      checkPoolValid();
+    }
+
+    function checkPoolValid() {
+      const ok = state.selectedChordIds.size >= 2;
+      dom.minPoolBanner.classList.toggle('hidden', ok);
+      return ok;
+    }
+
+    function onPoolChanged() {
+      renderSettingsCheckboxes();
+      if (state.selectedChordIds.size >= 2) {
+        if (!state.single.question || !state.selectedChordIds.has(state.single.question.chordDef.id)) {
+          generateSingleQuestion(false);
+        } else {
+          renderSingleVerticalOptions();
+        }
+        renderBatchVerticalOptions();
+      } else {
+        renderSingleVerticalOptions();
+        renderBatchVerticalOptions();
+      }
+    }
+
+    /**
+     * ============================================================================
+     * 6. 直式和風木札選項渲染（全部放在同一個橫排 flex-nowrap）
+     * ============================================================================
+     */
+    function renderVerticalChordRow(containerEl, options = {}) {
+      const {
+        mode = 'single',
+        answered = false,
+        correctId = null,
+        userChoiceId = null,
+        highlightedId = null,
+        onSelect = null
+      } = options;
+
+      containerEl.innerHTML = '';
+      const activeChords = CHORD_DEFINITIONS.filter(c => state.selectedChordIds.has(c.id));
+
+      if (activeChords.length === 0) {
+        containerEl.innerHTML = `
+          <div class="w-full py-6 rounded-2xl border border-dashed border-zakka-stitch bg-zakka-kraft/50 text-center text-xs font-bold text-zakka-muted">
+            尚未勾選任何和弦，請展開右上角「⚙️ 題庫與音色設定」勾選至少 2 種和弦
+          </div>
+        `;
+        return;
+      }
+
+      activeChords.forEach((chord) => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+
+        let cardClass = 'bg-zakka-paper hover:bg-zakka-orange/10 border-zakka-stitch hover:border-zakka-orange text-zakka-cocoa cursor-pointer';
+        let holeColor = 'bg-zakka-stitch';
+
+        if (mode === 'single' && answered) {
+          if (chord.id === correctId) {
+            cardClass = 'bg-zakka-matcha/18 border-zakka-matcha text-zakka-cocoa ring-2 ring-zakka-matcha/30 cursor-default';
+            holeColor = 'bg-zakka-matcha';
+          } else if (chord.id === userChoiceId && chord.id !== correctId) {
+            cardClass = 'bg-zakka-terracotta/18 border-zakka-terracotta text-zakka-cocoa ring-2 ring-zakka-terracotta/30 cursor-default';
+            holeColor = 'bg-zakka-terracotta';
+          } else {
+            cardClass = 'bg-zakka-kraft/60 border-zakka-stitch text-zakka-muted opacity-60 cursor-default';
+          }
+        } else if (mode === 'batch' && chord.id === highlightedId) {
+          cardClass = 'bg-zakka-orange/18 border-zakka-orange text-zakka-orange ring-2 ring-zakka-orange/25 cursor-pointer';
+          holeColor = 'bg-zakka-orange';
+        }
+
+        // 所有按鈕均分同一橫排寬度 (flex: 1; min-width: 0)，直式和風木札文字
+        btn.className = `flex-1 min-w-0 h-[106px] sm:h-[118px] rounded-2xl border-2 shadow-tag flex flex-col items-center justify-between py-2.5 px-0.5 transition-all active:scale-[0.97] select-none ${cardClass}`;
+        btn.disabled = (mode === 'single' && answered);
+
+        btn.innerHTML = `
+          <span class="w-1.5 h-1.5 rounded-full ${holeColor} shrink-0"></span>
+          <span class="vertical-tag-text font-bold flex-1 flex items-center justify-center">
+            ${chord.name}
+          </span>
+          <span class="w-3 border-t border-dashed border-current opacity-30 shrink-0"></span>
+        `;
+
+        btn.addEventListener('click', () => {
+          if (onSelect) onSelect(chord.id);
+        });
+
+        containerEl.appendChild(btn);
+      });
+    }
+
+    /**
+     * ============================================================================
+     * 7. 永遠顯示的兩八度（或三八度）迷你鋼琴鍵盤
+     *    - 作答前：顯示中性休眠鍵盤（C3 ~ B4），點擊任一琴鍵皆可試聽
+     *    - 作答後：白鍵與黑鍵皆以高對比咖啡橘色 (#D96B27 + 亮米白音名 #FFFDF9) 標示組成音！
+     * ============================================================================
+     */
+    function renderTwoOctavePiano(containerEl, activeMidis = [], pcToNameMap = null, pulsingMidis = [], baseMidiHint = 48) {
+      let startMidi = 48; // 預設 C3 起算兩八度 (C3 ~ B4)
+      let numOctaves = 2;
+
+      if (activeMidis && activeMidis.length > 0) {
+        const minNote = Math.min(...activeMidis);
+        const maxNote = Math.max(...activeMidis);
+        const startOctave = Math.floor(minNote / 12) - 1;
+        startMidi = (startOctave + 1) * 12;
+        numOctaves = (maxNote - startMidi >= 24) ? 3 : 2;
+      } else {
+        startMidi = baseMidiHint;
+        numOctaves = 2;
+      }
+
+      const endMidi = startMidi + numOctaves * 12 - 1;
+      const isBlack = (m) => [1, 3, 6, 8, 10].includes(m % 12);
+
+      const whiteMidis = [];
+      for (let m = startMidi; m <= endMidi; m++) {
+        if (!isBlack(m)) whiteMidis.push(m);
+      }
+
+      const wKeyW = 34;
+      const wKeyH = 98;
+      const bKeyW = 22;
+      const bKeyH = 60;
+      const totalW = whiteMidis.length * wKeyW;
+
+      const activeSet = new Set(activeMidis || []);
+      const pulseSet = new Set(pulsingMidis || []);
+
+      let svg = `<svg viewBox="0 0 ${totalW} ${wKeyH + 4}" class="w-full max-h-[112px] block mx-auto select-none">`;
+
+      // 繪製白鍵
+      whiteMidis.forEach((midi, idx) => {
+        const x = idx * wKeyW;
+        const isActive = activeSet.has(midi);
+        const isPulse = pulseSet.has(midi);
+        const noteLabel = MusicTheoryEngine.midiToNoteName(midi, pcToNameMap, true);
+        const pcLabel = MusicTheoryEngine.midiToNoteName(midi, pcToNameMap, false);
+
+        let fill = '#FFFDF9';
+        let stroke = '#D8CBB8';
+        if (isPulse) {
+          fill = '#E89B25';
+          stroke = '#9A3412';
+        } else if (isActive) {
+          fill = '#D96B27'; // 咖啡橘色標示組成音
+          stroke = '#9A3412';
+        }
+
+        svg += `
+          <g class="piano-key cursor-pointer" data-midi="${midi}">
+            <rect x="${x + 0.6}" y="1" width="${wKeyW - 1.2}" height="${wKeyH}" rx="5" fill="${fill}" stroke="${stroke}" stroke-width="${isActive ? 1.6 : 1}" />
+            ${
+              isActive
+                ? `<text x="${x + wKeyW / 2}" y="${wKeyH - 8}" text-anchor="middle" font-size="10.5" font-weight="700" fill="#FFFDF9">${pcLabel}</text>`
+                : (midi % 12 === 0
+                    ? `<text x="${x + wKeyW / 2}" y="${wKeyH - 7}" text-anchor="middle" font-size="9" font-weight="700" fill="#9A8878">${noteLabel}</text>`
+                    : '')
+            }
+          </g>
+        `;
+      });
+
+      // 繪製黑鍵（組成音一樣用高對比咖啡橘色 #D96B27 填滿 + 亮米白音名 #FFFDF9！）
+      let whiteCounter = 0;
+      for (let midi = startMidi; midi <= endMidi; midi++) {
+        if (!isBlack(midi)) {
+          whiteCounter++;
+        } else {
+          const x = whiteCounter * wKeyW - bKeyW / 2;
+          const isActive = activeSet.has(midi);
+          const isPulse = pulseSet.has(midi);
+          const pcLabel = MusicTheoryEngine.midiToNoteName(midi, pcToNameMap, false);
+
+          let fill = '#4A3B32';
+          let stroke = '#332720';
+          if (isPulse) {
+            fill = '#E89B25';
+            stroke = '#FFFDF9';
+          } else if (isActive) {
+            fill = '#D96B27'; // 黑鍵組成音同樣使用咖啡橘色！
+            stroke = '#FFFDF9';
+          }
+
+          svg += `
+            <g class="piano-key cursor-pointer" data-midi="${midi}">
+              <rect x="${x}" y="1" width="${bKeyW}" height="${bKeyH}" rx="4" fill="${fill}" stroke="${stroke}" stroke-width="${isActive ? 1.8 : 1}" />
+              ${
+                isActive
+                  ? `<text x="${x + bKeyW / 2}" y="${bKeyH - 7}" text-anchor="middle" font-size="9" font-weight="700" fill="#FFFDF9">${pcLabel}</text>`
+                  : ''
+              }
+            </g>
+          `;
+        }
+      }
+
+      svg += `</svg>`;
+      containerEl.innerHTML = svg;
+
+      // 點擊任一琴鍵皆可試聽單音並閃爍提示
+      containerEl.querySelectorAll('.piano-key').forEach(el => {
+        el.addEventListener('click', () => {
+          const m = parseInt(el.dataset.midi, 10);
+          audio.playNote(m, 0, 1.15, 0.85);
+          renderTwoOctavePiano(containerEl, activeMidis, pcToNameMap, [m], baseMidiHint);
+          setTimeout(() => {
+            renderTwoOctavePiano(containerEl, activeMidis, pcToNameMap, [], baseMidiHint);
+          }, 420);
+        });
+      });
+    }
+
+    /**
+     * ============================================================================
+     * 8. 模式一：單一播放模式邏輯（回饋列與鋼琴鍵盤永遠保持顯示）
+     * ============================================================================
+     */
+    function getDefaultRegisterBaseMidi() {
+      if (state.register === 'low') return 36;  // C2
+      if (state.register === 'high') return 72; // C5
+      return 48; // C3
+    }
+
+    function generateSingleQuestion(autoPlay = true) {
+      if (!checkPoolValid()) {
+        renderSingleVerticalOptions();
+        renderTwoOctavePiano(dom.singlePianoSvgBox, [], null, [], getDefaultRegisterBaseMidi());
+        return;
+      }
+      audio.stopAll();
+
+      const prevId = state.single.question ? state.single.question.chordDef.id : null;
+      state.single.question = buildQuestion(prevId);
+      state.single.answered = false;
+      state.single.userChoiceId = null;
+
+      dom.singleQNumber.textContent = `第 ${state.single.qNum} 題`;
+
+      // 重設「對錯回饋 + 下一題」列為作答前狀態（永遠顯示）
+      dom.singleFeedbackRow.className = 'rounded-2xl px-3 py-2 border-2 border-zakka-stitch bg-zakka-kraft/85 flex items-center justify-between gap-2 transition-colors';
+      dom.singleFeedbackText.className = 'text-xs sm:text-sm font-bold text-zakka-muted min-w-0';
+      dom.singleFeedbackText.textContent = '請聽題並點選上方和弦性質';
+      dom.singleNextBtn.className = 'shrink-0 inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-zakka-paper hover:bg-zakka-kraft text-zakka-muted border border-zakka-stitch font-bold text-xs sm:text-sm transition cursor-pointer';
+      dom.singleNextBtn.innerHTML = '<span>跳過 / 下一題 →</span>';
+
+      // 重設迷你鋼琴為中性休眠狀態（永遠顯示）
+      dom.singlePianoCaption.textContent = '🎹 作答後將以咖啡橘色標示組成音，點擊琴鍵可試聽';
+      renderTwoOctavePiano(dom.singlePianoSvgBox, [], null, [], getDefaultRegisterBaseMidi());
+
+      renderSingleVerticalOptions();
+
+      if (autoPlay) playSingleQuestion();
+    }
+
+    function playSingleQuestion() {
+      if (!checkPoolValid()) {
+        showToast('請先在「題庫與音色設定」勾選至少 2 種和弦性質！', 'warn');
+        return;
+      }
+      const q = state.single.question;
+      if (!q) return;
+      audio.playChord(q.midiNotes, q.articulation);
+    }
+
+    function renderSingleVerticalOptions() {
+      const q = state.single.question;
+      renderVerticalChordRow(dom.singleVerticalOptions, {
+        mode: 'single',
+        answered: state.single.answered,
+        correctId: q ? q.chordDef.id : null,
+        userChoiceId: state.single.userChoiceId,
+        onSelect: handleSingleChoice
+      });
+    }
+
+    function handleSingleChoice(chosenId) {
+      if (!checkPoolValid()) {
+        showToast('請至少勾選 2 種和弦性質才能作答喔！', 'warn');
+        return;
+      }
+      if (state.single.answered || !state.single.question) return;
+
+      state.single.answered = true;
+      state.single.userChoiceId = chosenId;
+
+      const q = state.single.question;
+      const isRight = chosenId === q.chordDef.id;
+
+      renderSingleVerticalOptions();
+
+      // 更新「對錯回饋 + 下一題 (Enter) →」同一橫排
+      if (isRight) {
+        dom.singleFeedbackRow.className = 'rounded-2xl px-3 py-2 border-2 border-zakka-matcha bg-zakka-matcha/15 flex items-center justify-between gap-2 animate-fade';
+        dom.singleFeedbackText.className = 'text-xs sm:text-sm font-bold text-zakka-matcha min-w-0';
+        dom.singleFeedbackText.textContent = `⭕ 答對了！${q.chordDef.name}`;
+      } else {
+        dom.singleFeedbackRow.className = 'rounded-2xl px-3 py-2 border-2 border-zakka-terracotta bg-zakka-terracotta/15 flex items-center justify-between gap-2 animate-fade';
+        dom.singleFeedbackText.className = 'text-xs sm:text-sm font-bold text-zakka-terracotta min-w-0';
+        dom.singleFeedbackText.textContent = `❌ 答錯了！正解：${q.chordDef.name}`;
+      }
+
+      dom.singleNextBtn.className = 'shrink-0 inline-flex items-center gap-1 px-3.5 py-1.5 rounded-xl bg-zakka-orange hover:bg-zakka-orangeHover text-white font-bold text-xs sm:text-sm shadow-2xs transition cursor-pointer';
+      dom.singleNextBtn.innerHTML = '<span>下一題 (Enter) →</span>';
+
+      // 立即在迷你鋼琴上以咖啡橘色 (#D96B27) 點亮所有組成音（黑白鍵皆亮橘色）
+      dom.singlePianoCaption.textContent = `🎹 已標示「${q.chordDef.name}」組成音，點擊琴鍵可單音試聽`;
+      renderTwoOctavePiano(dom.singlePianoSvgBox, q.midiNotes, q.pcToName);
+    }
+
+    /**
+     * ============================================================================
+     * 9. 模式二：連續十題聽寫模式（3.0s 演奏 + 1.5s 停頓 + 下方十格 + 回饋列與鋼琴）
+     * ============================================================================
+     */
+    const BATCH_COUNT = 10;
+    const PLAY_DURATION_MS = 3000;
+    const PAUSE_DURATION_MS = 1500;
+
+    function initBatchQuestionSet(resetAnswers = true) {
+      stopBatchTimer();
+      audio.stopAll();
+
+      if (!checkPoolValid()) {
+        renderBatchVerticalOptions();
+        renderBatchTenBoxes();
+        renderTwoOctavePiano(dom.batchPianoSvgBox, [], null, [], getDefaultRegisterBaseMidi());
+        return;
+      }
+
+      const list = [];
+      let prev = null;
+      for (let i = 0; i < BATCH_COUNT; i++) {
+        const q = buildQuestion(prev);
+        prev = q.chordDef.id;
+        list.push(q);
+      }
+
+      state.batch.questions = list;
+      state.batch.status = 'idle';
+      state.batch.currentPlayIdx = 0;
+      state.batch.phase = 'play';
+      state.batch.elapsedMs = 0;
+
+      if (resetAnswers) {
+        state.batch.playCount = 0;
+        state.batch.answers = new Array(BATCH_COUNT).fill(null);
+        state.batch.selectedBoxIdx = 0;
+        state.batch.graded = false;
+      }
+
+      updateBatchTopControls();
+      renderBatchVerticalOptions();
+      renderBatchTenBoxes();
+      updateBatchFeedbackAndPiano();
+    }
+
+    function startOrReplayBatch() {
+      if (!checkPoolValid()) {
+        showToast('請先在「題庫與音色設定」勾選至少 2 種和弦性質！', 'warn');
+        return;
+      }
+      if (state.batch.questions.length !== BATCH_COUNT) {
+        initBatchQuestionSet(true);
+      }
+
+      stopBatchTimer();
+      audio.stopAll();
+
+      // 累加「第 X 次播放」，且保留學生已輸入的十格答案
+      state.batch.playCount += 1;
+      state.batch.status = 'running';
+      state.batch.currentPlayIdx = 0;
+      state.batch.phase = 'play';
+      state.batch.elapsedMs = 0;
+      state.batch.lastTick = performance.now();
+
+      updateBatchTopControls();
+      renderBatchTenBoxes();
+      playBatchItem(0);
+
+      state.batch.timerId = setInterval(tickBatchLoop, 30);
+    }
+
+    function stopBatchTimer() {
+      if (state.batch.timerId) {
+        clearInterval(state.batch.timerId);
+        state.batch.timerId = null;
+      }
+    }
+
+    function playBatchItem(idx) {
+      const q = state.batch.questions[idx];
+      if (!q) return;
+      audio.playChord(q.midiNotes, q.articulation, { maxDurSec: 2.88 });
+    }
+
+    function tickBatchLoop() {
+      if (state.batch.status !== 'running') return;
+
+      const now = performance.now();
+      const dt = now - state.batch.lastTick;
+      state.batch.lastTick = now;
+      state.batch.elapsedMs += dt;
+
+      if (state.batch.phase === 'play') {
+        const rem = Math.max(0, (PLAY_DURATION_MS - state.batch.elapsedMs) / 1000);
+        const pct = Math.max(0, Math.min(100, (rem / 3.0) * 100));
+        dom.batchLiveStatus.textContent = `第 ${state.batch.currentPlayIdx + 1} / 10 題 · 演奏中 ${rem.toFixed(1)}s`;
+        dom.batchProgressFill.className = 'h-full bg-zakka-orange rounded-full transition-[width] duration-75 ease-linear';
+        dom.batchProgressFill.style.width = `${pct}%`;
+        dom.batchTimerSec.textContent = `${rem.toFixed(1)}s`;
+
+        if (state.batch.elapsedMs >= PLAY_DURATION_MS) {
+          state.batch.phase = 'pause';
+          state.batch.elapsedMs = 0;
+          audio.stopAll();
+        }
+      } else {
+        const rem = Math.max(0, (PAUSE_DURATION_MS - state.batch.elapsedMs) / 1000);
+        const pct = Math.max(0, Math.min(100, (rem / 1.5) * 100));
+        dom.batchLiveStatus.textContent = `第 ${state.batch.currentPlayIdx + 1} / 10 題 · 停頓作答 ${rem.toFixed(1)}s`;
+        dom.batchProgressFill.className = 'h-full bg-zakka-matcha rounded-full transition-[width] duration-75 ease-linear';
+        dom.batchProgressFill.style.width = `${pct}%`;
+        dom.batchTimerSec.textContent = `${rem.toFixed(1)}s`;
+
+        if (state.batch.elapsedMs >= PAUSE_DURATION_MS) {
+          if (state.batch.currentPlayIdx < BATCH_COUNT - 1) {
+            state.batch.currentPlayIdx += 1;
+            state.batch.phase = 'play';
+            state.batch.elapsedMs = 0;
+            updateBatchTopControls();
+            renderBatchTenBoxes();
+            playBatchItem(state.batch.currentPlayIdx);
+          } else {
+            stopBatchTimer();
+            audio.stopAll();
+            state.batch.status = 'finished';
+            dom.batchLiveStatus.textContent = '10 題播放完畢 · 可按「再播一次」或「批改對答案」';
+            dom.batchProgressFill.style.width = '0%';
+            dom.batchTimerSec.textContent = '0.0s';
+            updateBatchTopControls();
+            renderBatchTenBoxes();
+          }
+        }
+      }
+    }
+
+    function stopBatchEarly() {
+      stopBatchTimer();
+      audio.stopAll();
+      state.batch.status = 'stopped';
+      dom.batchLiveStatus.textContent = '已停止播放';
+      dom.batchProgressFill.style.width = '0%';
+      dom.batchTimerSec.textContent = '--';
+      updateBatchTopControls();
+      renderBatchTenBoxes();
+    }
+
+    function updateBatchTopControls() {
+      const { status, playCount, currentPlayIdx } = state.batch;
+      dom.batchPlayCountBadge.textContent = `第 ${playCount} 次播放`;
+
+      if (status === 'running') {
+        dom.batchStartBtn.classList.add('hidden');
+        dom.batchReplayAllBtn.classList.add('hidden');
+        dom.batchStopBtn.classList.remove('hidden');
+      } else {
+        dom.batchStopBtn.classList.add('hidden');
+        if (playCount === 0) {
+          dom.batchLiveStatus.textContent = '準備就緒（每題 3.0s · 停頓 1.5s）';
+          dom.batchStartBtn.classList.remove('hidden');
+          dom.batchReplayAllBtn.classList.add('hidden');
+        } else {
+          dom.batchStartBtn.classList.add('hidden');
+          dom.batchReplayAllBtn.classList.remove('hidden');
+        }
+      }
+    }
+
+    function renderBatchVerticalOptions() {
+      const currentAns = state.batch.answers[state.batch.selectedBoxIdx];
+      renderVerticalChordRow(dom.batchVerticalOptions, {
+        mode: 'batch',
+        highlightedId: currentAns,
+        onSelect: (chosenChordId) => {
+          if (!checkPoolValid()) {
+            showToast('請至少勾選 2 種和弦性質！', 'warn');
+            return;
+          }
+          const idx = state.batch.selectedBoxIdx;
+          state.batch.answers[idx] = chosenChordId;
+          if (idx < BATCH_COUNT - 1) {
+            state.batch.selectedBoxIdx = idx + 1;
+          }
+          renderBatchVerticalOptions();
+          renderBatchTenBoxes();
+          updateBatchFeedbackAndPiano();
+        }
+      });
+    }
+
+    function renderBatchTenBoxes() {
+      dom.batchTenBoxes.innerHTML = '';
+
+      for (let i = 0; i < BATCH_COUNT; i++) {
+        const isSelected = i === state.batch.selectedBoxIdx;
+        const isPlayingNow = state.batch.status === 'running' && i === state.batch.currentPlayIdx;
+        const userAnsId = state.batch.answers[i];
+        const userAnsDef = userAnsId ? CHORD_DEFINITIONS.find(c => c.id === userAnsId) : null;
+        const question = state.batch.questions[i];
+
+        let boxStyle = 'border-zakka-stitch bg-zakka-paper hover:border-zakka-orange/60';
+        let markBadge = '';
+        let correctHint = '';
+
+        if (state.batch.graded && question) {
+          const isCorrect = userAnsId === question.chordDef.id;
+          if (isCorrect) {
+            boxStyle = 'border-zakka-matcha bg-zakka-matcha/15';
+            markBadge = '<span class="text-[11px] font-bold text-zakka-matcha">⭕</span>';
+          } else {
+            boxStyle = 'border-zakka-terracotta bg-zakka-terracotta/15';
+            markBadge = '<span class="text-[11px] font-bold text-zakka-terracotta">❌</span>';
+            correctHint = `<div class="text-[10px] font-bold text-zakka-orange truncate">正:${question.chordDef.short}</div>`;
+          }
+        }
+
+        if (isSelected) {
+          boxStyle += ' ring-2 ring-zakka-orange border-zakka-orange';
+        }
+
+        const cell = document.createElement('button');
+        cell.type = 'button';
+        cell.className = `rounded-xl border-2 p-1.5 text-center transition cursor-pointer flex flex-col justify-between min-h-[60px] ${boxStyle}`;
+
+        cell.innerHTML = `
+          <div class="flex items-center justify-between w-full text-[11px] font-bold">
+            <span class="${isPlayingNow ? 'text-zakka-orange underline' : 'text-zakka-muted'}">
+              ${isPlayingNow ? `🔊${i + 1}` : `${i + 1}`}
+            </span>
+            ${markBadge}
+          </div>
+          <div class="text-xs font-bold text-zakka-cocoa truncate my-0.5">
+            ${userAnsDef ? userAnsDef.short : '—'}
+          </div>
+          ${correctHint}
+        `;
+
+        cell.addEventListener('click', () => {
+          state.batch.selectedBoxIdx = i;
+          renderBatchVerticalOptions();
+          renderBatchTenBoxes();
+          updateBatchFeedbackAndPiano();
+
+          if (state.batch.graded && question) {
+            audio.playChord(question.midiNotes, question.articulation);
+          }
+        });
+
+        dom.batchTenBoxes.appendChild(cell);
+      }
+    }
+
+    function gradeBatchAnswers() {
+      if (!checkPoolValid() || state.batch.questions.length !== BATCH_COUNT) return;
+      stopBatchTimer();
+      audio.stopAll();
+      state.batch.status = 'finished';
+      state.batch.graded = true;
+
+      updateBatchTopControls();
+      renderBatchTenBoxes();
+      updateBatchFeedbackAndPiano();
+    }
+
+    /**
+     * 更新模式二永遠顯示的「對錯回饋列」與「迷你鋼琴鍵盤」
+     */
+    function updateBatchFeedbackAndPiano() {
+      const idx = state.batch.selectedBoxIdx;
+      const q = state.batch.questions[idx];
+      dom.batchSingleReplayBtn.innerHTML = `<span>🔊 重聽第 ${idx + 1} 題</span>`;
+
+      if (!state.batch.graded || !q) {
+        dom.batchFeedbackRow.className = 'rounded-2xl px-3 py-2 border-2 border-zakka-stitch bg-zakka-kraft/85 flex items-center justify-between gap-2 transition-colors';
+        dom.batchFeedbackText.className = 'text-xs sm:text-sm font-bold text-zakka-muted min-w-0';
+        dom.batchFeedbackText.textContent = `目前選取第 ${idx + 1} 格，完成後按「批改對答案」`;
+        dom.batchPianoCaption.textContent = '🎹 點擊琴鍵可自由試聽，批改後點選任一題格子可檢視組成音';
+        renderTwoOctavePiano(dom.batchPianoSvgBox, [], null, [], getDefaultRegisterBaseMidi());
+        return;
+      }
+
+      let totalScore = 0;
+      for (let i = 0; i < BATCH_COUNT; i++) {
+        if (state.batch.answers[i] === state.batch.questions[i].chordDef.id) totalScore += 1;
+      }
+
+      const userAnsId = state.batch.answers[idx];
+      const isRight = userAnsId === q.chordDef.id;
+
+      if (isRight) {
+        dom.batchFeedbackRow.className = 'rounded-2xl px-3 py-2 border-2 border-zakka-matcha bg-zakka-matcha/15 flex items-center justify-between gap-2 animate-fade';
+        dom.batchFeedbackText.className = 'text-xs sm:text-sm font-bold text-zakka-matcha min-w-0';
+        dom.batchFeedbackText.textContent = `總分 ${totalScore}/10 ｜ 第 ${idx + 1} 題：⭕ 答對了！${q.chordDef.name}`;
+      } else {
+        dom.batchFeedbackRow.className = 'rounded-2xl px-3 py-2 border-2 border-zakka-terracotta bg-zakka-terracotta/15 flex items-center justify-between gap-2 animate-fade';
+        dom.batchFeedbackText.className = 'text-xs sm:text-sm font-bold text-zakka-terracotta min-w-0';
+        dom.batchFeedbackText.textContent = `總分 ${totalScore}/10 ｜ 第 ${idx + 1} 題：❌ 答錯了！正解：${q.chordDef.name}`;
+      }
+
+      dom.batchPianoCaption.textContent = `🎹 第 ${idx + 1} 題「${q.chordDef.name}」組成音（咖啡橘色標示，點擊琴鍵可試聽）`;
+      renderTwoOctavePiano(dom.batchPianoSvgBox, q.midiNotes, q.pcToName);
+    }
+
+    /**
+     * ============================================================================
+     * 10. 模式切換與全域事件綁定
+     * ============================================================================
+     */
+    function switchMode(newMode) {
+      if (state.mode === newMode) return;
+      state.mode = newMode;
+
+      stopBatchTimer();
+      audio.stopAll();
+
+      if (newMode === 'single') {
+        dom.tabSingle.className = 'px-2.5 sm:px-3 py-1 rounded-lg text-xs sm:text-sm font-bold bg-zakka-paper text-zakka-orange shadow-2xs border border-zakka-stitch/80 transition cursor-pointer';
+        dom.tabBatch.className = 'px-2.5 sm:px-3 py-1 rounded-lg text-xs sm:text-sm font-bold text-zakka-muted hover:text-zakka-cocoa transition cursor-pointer';
+        dom.batchPanel.classList.add('hidden');
+        dom.singlePanel.classList.remove('hidden');
+      } else {
+        dom.tabBatch.className = 'px-2.5 sm:px-3 py-1 rounded-lg text-xs sm:text-sm font-bold bg-zakka-paper text-zakka-orange shadow-2xs border border-zakka-stitch/80 transition cursor-pointer';
+        dom.tabSingle.className = 'px-2.5 sm:px-3 py-1 rounded-lg text-xs sm:text-sm font-bold text-zakka-muted hover:text-zakka-cocoa transition cursor-pointer';
+        dom.singlePanel.classList.add('hidden');
+        dom.batchPanel.classList.remove('hidden');
+
+        if (state.batch.questions.length !== BATCH_COUNT) {
+          initBatchQuestionSet(true);
+        } else {
+          renderBatchVerticalOptions();
+          renderBatchTenBoxes();
+          updateBatchFeedbackAndPiano();
+        }
+      }
+    }
+
+    function bindEvents() {
+      // 音波動畫同步
+      audio.onPlayStateChange = (playing) => {
+        if (playing) dom.singleWave.classList.add('playing');
+        else dom.singleWave.classList.remove('playing');
+      };
+
+      // 雙模式切換
+      dom.tabSingle.addEventListener('click', () => switchMode('single'));
+      dom.tabBatch.addEventListener('click', () => switchMode('batch'));
+
+      // 右上角「題庫與音色設定」折疊抽屜開關
+      dom.drawerToggle.addEventListener('click', () => {
+        state.drawerOpen = !state.drawerOpen;
+        dom.drawerToggle.setAttribute('aria-expanded', String(state.drawerOpen));
+        dom.drawerBody.classList.toggle('hidden', !state.drawerOpen);
+      });
+
+      // 音色選擇
+      document.querySelectorAll('.timbre-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          state.timbre = btn.dataset.timbre;
+          audio.setTimbre(state.timbre);
+          document.querySelectorAll('.timbre-btn').forEach(b => {
+            b.className = b.dataset.timbre === state.timbre
+              ? 'timbre-btn py-1 px-1 rounded-lg text-xs font-bold border-2 border-zakka-orange bg-zakka-orange/15 text-zakka-cocoa transition cursor-pointer'
+              : 'timbre-btn py-1 px-1 rounded-lg text-xs font-bold border border-zakka-stitch bg-zakka-paper text-zakka-muted hover:text-zakka-cocoa transition cursor-pointer';
+          });
+          dom.singleModeTag.textContent = `${TIMBRE_NAMES[state.timbre]} · ${REGISTER_NAMES[state.register]} · ${VOICING_NAMES[state.voicing]} · ${ARTICULATION_NAMES[state.articulation]}`;
+          audio.playChord([60, 64, 67], 'block');
+        });
+      });
+
+      dom.previewTimbreBtn.addEventListener('click', () => {
+        audio.playChord([48, 55, 64, 67], 'arp');
+      });
+
+      // 音域選擇
+      document.querySelectorAll('.register-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          state.register = btn.dataset.register;
+          document.querySelectorAll('.register-btn').forEach(b => {
+            b.className = b.dataset.register === state.register
+              ? 'register-btn py-1 px-1 rounded-lg text-xs font-bold border-2 border-zakka-orange bg-zakka-orange/15 text-zakka-cocoa transition cursor-pointer'
+              : 'register-btn py-1 px-1 rounded-lg text-xs font-bold border border-zakka-stitch bg-zakka-paper text-zakka-muted hover:text-zakka-cocoa transition cursor-pointer';
+          });
+          dom.singleModeTag.textContent = `${TIMBRE_NAMES[state.timbre]} · ${REGISTER_NAMES[state.register]} · ${VOICING_NAMES[state.voicing]} · ${ARTICULATION_NAMES[state.articulation]}`;
+          if (state.mode === 'single' && !state.single.answered && state.selectedChordIds.size >= 2) {
+            generateSingleQuestion(true);
+          }
+        });
+      });
+
+      // 排列選擇
+      document.querySelectorAll('.voicing-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          state.voicing = btn.dataset.voicing;
+          document.querySelectorAll('.voicing-btn').forEach(b => {
+            b.className = b.dataset.voicing === state.voicing
+              ? 'voicing-btn py-1 px-1 rounded-lg text-xs font-bold border-2 border-zakka-orange bg-zakka-orange/15 text-zakka-cocoa transition cursor-pointer'
+              : 'voicing-btn py-1 px-1 rounded-lg text-xs font-bold border border-zakka-stitch bg-zakka-paper text-zakka-muted hover:text-zakka-cocoa transition cursor-pointer';
+          });
+          dom.singleModeTag.textContent = `${TIMBRE_NAMES[state.timbre]} · ${REGISTER_NAMES[state.register]} · ${VOICING_NAMES[state.voicing]} · ${ARTICULATION_NAMES[state.articulation]}`;
+          if (state.mode === 'single' && !state.single.answered && state.selectedChordIds.size >= 2) {
+            generateSingleQuestion(true);
+          }
+        });
+      });
+
+      // 彈奏方式選擇
+      document.querySelectorAll('.articulation-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          state.articulation = btn.dataset.articulation;
+          document.querySelectorAll('.articulation-btn').forEach(b => {
+            b.className = b.dataset.articulation === state.articulation
+              ? 'articulation-btn py-1 px-1 rounded-lg text-xs font-bold border-2 border-zakka-orange bg-zakka-orange/15 text-zakka-cocoa transition cursor-pointer'
+              : 'articulation-btn py-1 px-1 rounded-lg text-xs font-bold border border-zakka-stitch bg-zakka-paper text-zakka-muted hover:text-zakka-cocoa transition cursor-pointer';
+          });
+          dom.singleModeTag.textContent = `${TIMBRE_NAMES[state.timbre]} · ${REGISTER_NAMES[state.register]} · ${VOICING_NAMES[state.voicing]} · ${ARTICULATION_NAMES[state.articulation]}`;
+          if (state.mode === 'single' && !state.single.answered && state.selectedChordIds.size >= 2) {
+            generateSingleQuestion(true);
+          }
+        });
+      });
+
+      // 題庫快捷按鈕
+      document.querySelectorAll('.bulk-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const action = btn.dataset.bulk;
+          if (action === 'triads') {
+            state.selectedChordIds = new Set(CHORD_DEFINITIONS.filter(c => c.category === 'triad').map(c => c.id));
+            showToast('已全選 4 種三和弦');
+          } else if (action === 'sevenths') {
+            state.selectedChordIds = new Set(CHORD_DEFINITIONS.filter(c => c.category === 'seventh').map(c => c.id));
+            showToast('已全選 7 種七和弦（含小大七）');
+          } else if (action === 'all') {
+            state.selectedChordIds = new Set(CHORD_DEFINITIONS.map(c => c.id));
+            showToast('已全選全部 11 種和弦');
+          } else if (action === 'none') {
+            state.selectedChordIds.clear();
+            audio.stopAll();
+            showToast('已全部取消，請至少勾選 2 種和弦性質', 'warn');
+          }
+          onPoolChanged();
+        });
+      });
+
+      // 模式一：再聽一次、慢速拆解、下一題
+      dom.singleReplayBtn.addEventListener('click', playSingleQuestion);
+
+      dom.singleSlowBtn.addEventListener('click', () => {
+        if (!checkPoolValid()) return;
+        const q = state.single.question;
+        if (!q) return;
+        audio.playChord(q.midiNotes, 'slow', {
+          onNoteTrigger: (midis) => {
+            if (state.single.answered) {
+              renderTwoOctavePiano(dom.singlePianoSvgBox, q.midiNotes, q.pcToName, midis);
+            }
+          }
+        });
+        if (state.single.answered) {
+          setTimeout(() => {
+            renderTwoOctavePiano(dom.singlePianoSvgBox, q.midiNotes, q.pcToName, []);
+          }, q.midiNotes.length * 560 + 800);
+        }
+      });
+
+      dom.singleNextBtn.addEventListener('click', () => {
+        if (!checkPoolValid()) {
+          showToast('請至少勾選 2 種和弦性質！', 'warn');
+          return;
+        }
+        state.single.qNum += 1;
+        generateSingleQuestion(true);
+      });
+
+      // 模式二：連續十題控制
+      dom.batchStartBtn.addEventListener('click', startOrReplayBatch);
+      dom.batchReplayAllBtn.addEventListener('click', startOrReplayBatch);
+      dom.batchStopBtn.addEventListener('click', stopBatchEarly);
+
+      dom.batchNewSetBtn.addEventListener('click', () => {
+        initBatchQuestionSet(true);
+        showToast('已更換一組全新 10 題！');
+      });
+
+      dom.batchGradeBtn.addEventListener('click', gradeBatchAnswers);
+
+      dom.batchSingleReplayBtn.addEventListener('click', () => {
+        if (!checkPoolValid()) return;
+        const idx = state.batch.selectedBoxIdx;
+        const q = state.batch.questions[idx];
+        if (q) audio.playChord(q.midiNotes, q.articulation);
+      });
+
+      // 鍵盤快捷鍵（Enter 或 Space 進入下一題 / 重聽）
+      document.addEventListener('keydown', (e) => {
+        if (state.mode !== 'single' || state.selectedChordIds.size < 2) return;
+        if (e.code === 'Enter') {
+          if (state.single.answered) {
+            e.preventDefault();
+            state.single.qNum += 1;
+            generateSingleQuestion(true);
+          }
+        } else if (e.code === 'Space') {
+          e.preventDefault();
+          if (state.single.answered) {
+            state.single.qNum += 1;
+            generateSingleQuestion(true);
+          } else {
+            playSingleQuestion();
+          }
+        }
+      });
+    }
+
+    // 啟動初始化
+    window.addEventListener('DOMContentLoaded', () => {
+      renderSettingsCheckboxes();
+      bindEvents();
+      generateSingleQuestion(false);
+    });
+  </script>
+</body>
+</html>
